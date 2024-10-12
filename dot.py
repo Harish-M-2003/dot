@@ -33,8 +33,7 @@ class Dot:
         print("log", args)
 
     def hash_object(self, args):
-        
-        repo = Repository(os.getcwd())
+        # find to implement a separate function which finds out the path of a given file
         print(self.git_object.get_hash(args.file))
 
     def cat_file(self, args):
