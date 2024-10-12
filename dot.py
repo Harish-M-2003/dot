@@ -35,7 +35,7 @@ class Dot:
 
         sub_parser = cli.add_subparsers(title="Commands" , dest="command")
 
-        init = sub_parser.add_parser("init")
+        init = sub_parser.add_parser("init" , help="Initialize a dot repo")
 
         idx  = sub_parser.add_parser("idx")
         idx.add_argument("filenames" , nargs="+")

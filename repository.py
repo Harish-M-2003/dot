@@ -7,7 +7,7 @@ class Repository:
     def __init__(self, path):
 
         self.work_tree = path
-        self.dot_dir = os.path.join(path, ".dot")
+        self.dot_dir = os.path.join(self.work_tree, ".dot")
 
     def create(self):
 
@@ -24,7 +24,7 @@ class Repository:
 
             with open(os.path.join(self.dot_dir, "description"), "w") as DESC_FILE:
                 DESC_FILE.write(
-                    "Unnamed repository; edit this file 'description' to name the repository."
+                    "Unnamed repo ; edit this file 'description' to name the repos."
                 )
 
             with open(os.path.join(self.dot_dir, "config.ini"), "w") as CONFIG_FILE:
@@ -37,7 +37,12 @@ class Repository:
                 config.write(CONFIG_FILE)
 
         else:
-            user_option = input("Do you want to reinitialize this repository").strip()
+            user_option = input("Do you want to reinitialize this repo [y/n] : ").strip()
             if user_option.startswith("y"):
                 shutil.rmtree(self.dot_dir)
                 self.create()
+    
+    def get_repo_root(self):
+        return self.work_tree
+
+    
