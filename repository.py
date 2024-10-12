@@ -15,7 +15,7 @@ class Repository:
             os.mkdir(self.dot_dir)
             os.mkdir(os.path.join(self.dot_dir, "objects"))
             os.mkdir(os.path.join(self.dot_dir, "refs"))
-            os.mkdir(os.path.join(self.dot_dir, "refs", "head"))
+            os.mkdir(os.path.join(self.dot_dir, "refs", "heads"))
             os.mkdir(os.path.join(self.dot_dir, "refs", "tags"))
             os.mkdir(os.path.join(self.dot_dir, "hooks"))
 

@@ -1,53 +1,84 @@
-
 import sys
 import argparse
 import os
 from repository import Repository
+from gitobject import GitObject
 
 class Dot:
-
     """
-        init  -- initialize a repository
-        idx   -- index files and folders
-        save  -- commit the changes to the dot history
-        log   -- display the logs of the repository 
+    init  -- initialize a repository
+    idx   -- index files and folders
+    save  -- commit the changes to the dot history
+    log   -- display the logs of the repository
+    hash-object -- hash the objects to git object
+    cat-file -- display the git objects
     """
 
-    def idx(self , args):
-        print("idx" , args)
-    
-    def init(self , args):
+    def __init__(self):
+
+        self.git_object = GitObject()
+
+    def idx(self, args):
+        print("idx", args)
+
+    def init(self, args):
 
         repo = Repository(os.getcwd())
         repo.create()
-    
-    def save(self , args):
-        print("save" , args.filenames)
-        
 
-    def log(self , args):
-        print("log" , args)
+    def save(self, args):
+        print("save", args.filenames)
+
+    def log(self, args):
+        print("log", args)
+
+    def hash_object(self, args):
         
+        repo = Repository(os.getcwd())
+        print(self.git_object.get_hash(args.file))
+
+    def cat_file(self, args):
+
+        object_hash = args.object
+        object_type = args.type
+
+        repo = Repository(os.getcwd())
+
+        self.git_object.get_object(repo , object_type , object_hash)
 
     def run(self):
 
         cli = argparse.ArgumentParser(description="Version control sytem")
 
-        sub_parser = cli.add_subparsers(title="Commands" , dest="command")
+        sub_parser = cli.add_subparsers(title="Commands", dest="command")
 
-        init = sub_parser.add_parser("init" , help="Initialize a dot repo")
+        init = sub_parser.add_parser("init", help="Initialize a dot repo")
 
-        idx  = sub_parser.add_parser("idx")
-        idx.add_argument("filenames" , nargs="+")
+        idx = sub_parser.add_parser("idx")
+        idx.add_argument("filenames", nargs="+")
 
         save = sub_parser.add_parser("save")
-        save.add_argument("filenames" , nargs="+")
+        save.add_argument("filenames", nargs="+")
 
-        log  = sub_parser.add_parser("log")
-        log.add_argument("-l" , "--limit" , type=int)
+        log = sub_parser.add_parser("log")
+        log.add_argument("-l", "--limit", type=int)
 
-        cli.add_argument("-v" , "-version" , help="Display the current version of dot")
-        
+        hash_object = sub_parser.add_parser("hash-object")
+        hash_object.add_argument("file" , type=str)
+
+        cat_file = sub_parser.add_parser(
+            "cat-file", help="Provide content of repository objects"
+        )
+        cat_file.add_argument(
+            "type",
+            metavar="type",
+            choices=["blob", "commit", "tag", "tree"],
+            help="Specify the type",
+        )
+        cat_file.add_argument("object", metavar="object", help="The object to display")
+
+        cli.add_argument("-v", "-version", help="Display the current version of dot")
+
         cli_args = cli.parse_args()
 
         match cli_args.command:
@@ -59,7 +90,12 @@ class Dot:
                 self.save(cli_args)
             case "log":
                 self.log(cli_args)
+            case "hash-object":
+                self.hash_object(cli_args)
+            case "cat-file":
+                self.cat_file(cli_args)
             case _:
                 cli.print_help()
+
 
 Dot().run()
