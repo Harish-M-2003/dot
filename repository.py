@@ -41,8 +41,3 @@ class Repository:
             if user_option.startswith("y"):
                 shutil.rmtree(self.dot_dir)
                 self.create()
-    
-    def get_repo_root(self):
-        return self.work_tree
-
-    
