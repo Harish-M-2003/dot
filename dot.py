@@ -11,14 +11,28 @@ from hashlib import sha1
 
 class Dot:
 
-    def __init__(self):
+    # def __init__(self):
 
-        self.repo = Repository(find_dot(os.getcwd()))
+    #     self.repo = Repository(find_dot(os.getcwd()))
     #     self.dot_object = DotObject()
 
     def idx(self, args):
 
-        print(find_dot(os.getcwd()))
+        dot_path = find_dot(os.getcwd())
+        object_path = os.path.realpath(os.path.join(dot_path , "objects"))
+
+        for filename in args.filenames:
+
+            dot_object = DotObject("blob")
+            
+            file_path = find_file(filename)
+            if file_path:
+                with open(file_path , "r") as file:
+                    dot_object.serialize(file.read())
+            else:
+                print("StageError : File does not exits") 
+
+
         
 
     def init(self, args):
@@ -46,12 +60,13 @@ class Dot:
         
         sha_hash = sha1(content).hexdigest()
 
-        hashed_file = os.path.realpath(os.path.join(find_dot(os.getcwd()) , "objects" , sha_hash[:2]))
-        if not os.path.exists(hashed_file):
-            os.makedirs(hashed_file)
+        # hashed_file = os.path.realpath(os.path.join(find_dot(os.getcwd()) , "objects" , sha_hash[:2]))
+        # if not os.path.exists(hashed_file):
+        #     os.makedirs(hashed_file)
         
-            with open(os.path.join(hashed_file , sha_hash[2:]) , "wb") as file:
-                file.write(zlib.compress(content))
+        #     with open(os.path.join(hashed_file , sha_hash[2:]) , "wb") as file:
+        #         object_fmt = b"blob" + b" " + str(len(content)).encode("ascii") + b"\x00" +  content
+        #         file.write(zlib.compress(object_fmt))
 
         print(sha_hash)
 
@@ -63,24 +78,16 @@ class Dot:
         object_file = os.path.realpath(hashed_file)
 
         if os.path.exists(object_file):
-
             with open(object_file , "rb") as file:
-                content = zlib.decompress(file.read())
-                if isblob(content):
-                    print(content.decode())
+                content = zlib.decompress(file.read()).decode()
+                object_type = content[:content.find(" ")]
+                data = content[content.find("\x00") + 1 : ]
+                if object_type in ("commit" , "tree" , "blob"):
+                    print(data)
                 else:
                     print("Invalid data for cat-file")
         else:
             print("sha file Does not exits")
-
-
-
-        # object_hash = args.object
-        # object_type = args.type
-
-        # repo = Repository(os.getcwd())
-
-        # self.dot_object.get_object(repo , object_type , object_hash)
 
     def run(self):
 
@@ -90,7 +97,7 @@ class Dot:
 
         init = sub_parser.add_parser("init", help="Initialize a dot repo")
 
-        idx = sub_parser.add_parser("idx")
+        idx = sub_parser.add_parser("stage")
         idx.add_argument("filenames", nargs="+")
 
         save = sub_parser.add_parser("save")
@@ -120,7 +127,7 @@ class Dot:
         match cli_args.command:
             case "init":
                 self.init(cli_args)
-            case "idx":
+            case "stage":
                 self.idx(cli_args)
             case "save":
                 self.save(cli_args)

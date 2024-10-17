@@ -14,9 +14,4 @@ from utils.search import find_dot
 
 
 def write_object(object, write=False):
-
-    
     fmt = object.object_format
-
-def isblob(content):
-    return True
