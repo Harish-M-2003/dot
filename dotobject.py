@@ -45,7 +45,8 @@ class DotObject:
             with open(object_path, "rb") as object_file:
 
                 content = zlib.decompress(object_file.read())
-                print(content)
+                data = content[content.find(b"\x00") + 1 : ].decode()
+                print(data)
 
     #     return zlib.compress(data)
 

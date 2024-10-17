@@ -1,4 +1,3 @@
-import sys
 import argparse
 import os
 import zlib
@@ -8,13 +7,7 @@ from utils.search import *
 from utils.object import *
 from hashlib import sha1
 
-
 class Dot:
-
-    # def __init__(self):
-
-    #     self.repo = Repository(find_dot(os.getcwd()))
-    #     self.dot_object = DotObject()
 
     def idx(self, args):
 
@@ -32,23 +25,20 @@ class Dot:
             else:
                 print("StageError : File does not exits") 
 
-
-        
-
     def init(self, args):
 
         repo = Repository(os.getcwd())
         repo.create()
 
-    def save(self, args):
-        print("save", args.filenames)
+    def save(self, args): ...
+
+        # file_mode sha1 filename/directory_name -> tree
+        # tree , parent , author , commmiter , message -> commit
 
     def log(self, args):
         print("log", args)
 
     def hash_object(self, args):
-        # implement a separate function which finds out the path of a given file
-        # print(self.dot_object.get_hash(args.file))
 
         file_path = find_file(args.file)
 
@@ -60,16 +50,7 @@ class Dot:
         
         sha_hash = sha1(content).hexdigest()
 
-        # hashed_file = os.path.realpath(os.path.join(find_dot(os.getcwd()) , "objects" , sha_hash[:2]))
-        # if not os.path.exists(hashed_file):
-        #     os.makedirs(hashed_file)
-        
-        #     with open(os.path.join(hashed_file , sha_hash[2:]) , "wb") as file:
-        #         object_fmt = b"blob" + b" " + str(len(content)).encode("ascii") + b"\x00" +  content
-        #         file.write(zlib.compress(object_fmt))
-
         print(sha_hash)
-
 
     def cat_file(self, args):
 
@@ -88,6 +69,15 @@ class Dot:
                     print("Invalid data for cat-file")
         else:
             print("sha file Does not exits")
+
+    def tag(self , args):
+
+        dot_path = find_dot(os.getcwd())
+        tags_path = os.path.realpath(os.path.join(dot_path , "refs" , "tags"))
+
+        with open(os.path.join(tags_path , args.tagname) , "w") as tag:
+            tag.write(args.hash)
+
 
     def run(self):
 
@@ -108,6 +98,10 @@ class Dot:
 
         hash_object = sub_parser.add_parser("hash")
         hash_object.add_argument("file" , type=str)
+
+        tag = sub_parser.add_parser("mark")
+        tag.add_argument("tagname")
+        tag.add_argument("hash")
 
         cat_file = sub_parser.add_parser(
             "print", help="Provide content of repository objects"
@@ -137,6 +131,8 @@ class Dot:
                 self.hash_object(cli_args)
             case "print":
                 self.cat_file(cli_args)
+            case "mark":
+                self.tag(cli_args)
             case _:
                 cli.print_help()
 

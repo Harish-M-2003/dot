@@ -20,7 +20,7 @@ def find_file(file_name):
     os.chdir(work_tree)
 
     for root, dirs, files in os.walk(work_tree):
-        if ".git" in root:
+        if ".git" in root or ".dot" in root :
             continue
         if file_name in dirs or file_name in files:
             return os.path.realpath(os.path.join(root , file_name))
