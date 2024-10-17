@@ -3,15 +3,18 @@ import argparse
 import os
 from repository import Repository
 from dotobject import DotObject
+from utils import search
 
 class Dot:
 
-    def __init__(self):
+    # def __init__(self):
 
-        self.dot_object = DotObject()
+    #     self.dot_object = DotObject()
 
     def idx(self, args):
-        print("idx", args)
+
+        print(search.find_dot(os.getcwd()))
+        
 
     def init(self, args):
 
@@ -24,18 +27,18 @@ class Dot:
     def log(self, args):
         print("log", args)
 
-    def hash_object(self, args):
+    def hash_object(self, args): ...
         # implement a separate function which finds out the path of a given file
-        print(self.dot_object.get_hash(args.file))
+        # print(self.dot_object.get_hash(args.file))
 
-    def cat_file(self, args):
+    def cat_file(self, args): ...
 
-        object_hash = args.object
-        object_type = args.type
+        # object_hash = args.object
+        # object_type = args.type
 
-        repo = Repository(os.getcwd())
+        # repo = Repository(os.getcwd())
 
-        self.dot_object.get_object(repo , object_type , object_hash)
+        # self.dot_object.get_object(repo , object_type , object_hash)
 
     def run(self):
 
