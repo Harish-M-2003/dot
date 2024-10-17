@@ -4,7 +4,6 @@ import zlib
 from repository import Repository
 from dotobject import DotObject
 from utils.search import *
-from utils.object import *
 from hashlib import sha1
 
 class Dot:
