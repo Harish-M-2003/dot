@@ -1,19 +1,24 @@
 import sys
 import argparse
 import os
+import zlib
 from repository import Repository
 from dotobject import DotObject
-from utils import search
+from utils.search import *
+from utils.object import *
+from hashlib import sha1
+
 
 class Dot:
 
-    # def __init__(self):
+    def __init__(self):
 
+        self.repo = Repository(find_dot(os.getcwd()))
     #     self.dot_object = DotObject()
 
     def idx(self, args):
 
-        print(search.find_dot(os.getcwd()))
+        print(find_dot(os.getcwd()))
         
 
     def init(self, args):
@@ -27,11 +32,48 @@ class Dot:
     def log(self, args):
         print("log", args)
 
-    def hash_object(self, args): ...
+    def hash_object(self, args):
         # implement a separate function which finds out the path of a given file
         # print(self.dot_object.get_hash(args.file))
 
-    def cat_file(self, args): ...
+        file_path = find_file(args.file)
+
+        if not file_path:
+            raise FileNotFoundError("File " , args.file , "does not present in the work tree")
+        
+        with open(file_path , "rb") as file:
+            content = file.read()
+        
+        sha_hash = sha1(content).hexdigest()
+
+        hashed_file = os.path.realpath(os.path.join(find_dot(os.getcwd()) , "objects" , sha_hash[:2]))
+        if not os.path.exists(hashed_file):
+            os.makedirs(hashed_file)
+        
+            with open(os.path.join(hashed_file , sha_hash[2:]) , "wb") as file:
+                file.write(zlib.compress(content))
+
+        print(sha_hash)
+
+
+    def cat_file(self, args):
+
+        dot_path = find_dot(os.getcwd())
+        hashed_file = os.path.join(dot_path , "objects" , args.object[:2] , args.object[2:])
+        object_file = os.path.realpath(hashed_file)
+
+        if os.path.exists(object_file):
+
+            with open(object_file , "rb") as file:
+                content = zlib.decompress(file.read())
+                if isblob(content):
+                    print(content.decode())
+                else:
+                    print("Invalid data for cat-file")
+        else:
+            print("sha file Does not exits")
+
+
 
         # object_hash = args.object
         # object_type = args.type
@@ -57,18 +99,18 @@ class Dot:
         log = sub_parser.add_parser("log")
         log.add_argument("-l", "--limit", type=int)
 
-        hash_object = sub_parser.add_parser("hash-object")
+        hash_object = sub_parser.add_parser("hash")
         hash_object.add_argument("file" , type=str)
 
         cat_file = sub_parser.add_parser(
-            "cat-file", help="Provide content of repository objects"
+            "print", help="Provide content of repository objects"
         )
-        cat_file.add_argument(
-            "type",
-            metavar="type",
-            choices=["blob", "commit", "tag", "tree"],
-            help="Specify the type",
-        )
+        # cat_file.add_argument(
+        #     "type",
+        #     metavar="type",
+        #     choices=["blob", "commit", "tag", "tree"],
+        #     help="Specify the type",
+        # )
         cat_file.add_argument("object", metavar="object", help="The object to display")
 
         cli.add_argument("-v", "-version", help="Display the current version of dot")
@@ -84,9 +126,9 @@ class Dot:
                 self.save(cli_args)
             case "log":
                 self.log(cli_args)
-            case "hash-object":
+            case "hash":
                 self.hash_object(cli_args)
-            case "cat-file":
+            case "print":
                 self.cat_file(cli_args)
             case _:
                 cli.print_help()

@@ -1,7 +1,7 @@
 import os
 import zlib
 import hashlib
-
+from utils.search import find_dot
 class DotObject:
 
     def __init__(self , object_format):
@@ -9,6 +9,16 @@ class DotObject:
         self.object_format = object_format
 
     def serialize(self , data): ...
+
+        # dot_path = find_dot(os.getcwd())
+        
+        # serialization_fmt = self.object_format + " " + len(data) + data
+        # sha1 = hashlib.sha1(serialization_fmt).hexdigest()
+
+        # objects_path = os.path.join(dot_path , "objects" , sha1[:2] , sha1[2:])
+        # with open(objects_path , "wb") as object_file:
+
+        #     object_file.write(zlib.compress(serialization_fmt.encode()))
 
     def deserialize(self , hash_value): ...
         
