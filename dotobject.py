@@ -2,7 +2,7 @@ import os
 import zlib
 import hashlib
 
-class GitObject:
+class DotObject:
 
     def serialize(self , data):
         

@@ -2,21 +2,13 @@ import sys
 import argparse
 import os
 from repository import Repository
-from gitobject import GitObject
+from dotobject import DotObject
 
 class Dot:
-    """
-    init  -- initialize a repository
-    idx   -- index files and folders
-    save  -- commit the changes to the dot history
-    log   -- display the logs of the repository
-    hash-object -- hash the objects to git object
-    cat-file -- display the git objects
-    """
 
     def __init__(self):
 
-        self.git_object = GitObject()
+        self.dot_object = DotObject()
 
     def idx(self, args):
         print("idx", args)
@@ -33,8 +25,8 @@ class Dot:
         print("log", args)
 
     def hash_object(self, args):
-        # find to implement a separate function which finds out the path of a given file
-        print(self.git_object.get_hash(args.file))
+        # implement a separate function which finds out the path of a given file
+        print(self.dot_object.get_hash(args.file))
 
     def cat_file(self, args):
 
@@ -43,7 +35,7 @@ class Dot:
 
         repo = Repository(os.getcwd())
 
-        self.git_object.get_object(repo , object_type , object_hash)
+        self.dot_object.get_object(repo , object_type , object_hash)
 
     def run(self):
 
